@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartShop India</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f6f9;color:#222}
+header{background:#075e54;color:white;padding:18px;text-align:center}
+header h1{margin:0}
+header p{margin-bottom:0}
+.search{padding:15px;background:white}
+.search input{width:100%;padding:13px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+.categories{display:flex;gap:8px;overflow:auto;padding:12px}
+.categories button{padding:10px 14px;border:0;border-radius:20px;background:#dff5ed;white-space:nowrap}
+h2{padding:0 12px}
+.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:12px}
+.card{background:white;border-radius:12px;padding:12px;box-shadow:0 2px 8px #ddd}
+.pic{height:100px;display:flex;align-items:center;justify-content:center;font-size:55px;background:#f3f3f3;border-radius:8px}
+.card h3{font-size:16px}
+.price{font-size:20px;font-weight:bold;color:#087443}
+.old{color:#777;text-decoration:line-through}
+.badge{color:#d00;font-weight:bold}
+button{cursor:pointer}
+.view,.buy{display:block;text-align:center;width:100%;padding:10px;border:0;border-radius:7px;margin-top:8px}
+.view{background:#e6f1ff;color:#174ea6}
+.buy{background:#087443;color:white;text-decoration:none}
+#details{display:none;background:white;margin:12px;padding:16px;border-radius:12px}
+#details .pic{height:150px;font-size:75px}
+.back{padding:10px;border:0;border-radius:7px;background:#ddd}
+footer{text-align:center;padding:25px;color:#666}
+</style>
+</head>
+
+<body>
+<header>
+<h1>🛍️ SmartShop India</h1>
+<p>சிறந்த பொருட்கள் • சிறந்த விலைகள்</p>
+</header>
+
+<div class="search">
+<input id="search" placeholder="🔍 பொருளைத் தேடுங்கள்..." oninput="showProducts()">
+</div>
+
+<div class="categories">
+<button onclick="category('அனைத்தும்')">அனைத்தும்</button>
+<button onclick="category('மொபைல்')">📱 மொபைல்</button>
+<button onclick="category('எலக்ட்ரானிக்ஸ்')">🎧 எலக்ட்ரானிக்ஸ்</button>
+<button onclick="category('வீடு')">🏠 வீடு</button>
+</div>
+
+<main id="home">
+<h2>🔥 பிரபலமான பொருட்கள்</h2>
+<div class="products" id="products"></div>
+</main>
+
+<section id="details"></section>
+
+<footer>
+<p>SmartShop India</p>
+<p>விலை வாங்குவதற்கு முன் விற்பனையாளர் தளத்தில் சரிபார்க்கவும்.</p>
+</footer>
+
+<script>
+const items=[
+{id:1,name:"ஸ்மார்ட்போன்",cat:"மொபைல்",icon:"📱",price:12999,old:15999,store:"மாதிரி கடை A",url:"https://www.amazon.in/"},
+{id:2,name:"வயர்லெஸ் ஹெட்போன்",cat:"எலக்ட்ரானிக்ஸ்",icon:"🎧",price:1499,old:1999,store:"மாதிரி கடை B",url:"https://www.flipkart.com/"},
+{id:3,name:"ஸ்மார்ட் வாட்ச்",cat:"எலக்ட்ரானிக்ஸ்",icon:"⌚",price:1999,old:2499,store:"மாதிரி கடை A",url:"https://www.amazon.in/"},
+{id:4,name:"வீட்டு விளக்கு",cat:"வீடு",icon:"💡",price:499,old:699,store:"மாதிரி கடை B",url:"https://www.flipkart.com/"},
+{id:5,name:"லேப்டாப்",cat:"எலக்ட்ரானிக்ஸ்",icon:"💻",price:38999,old:44999,store:"மாதிரி கடை A",url:"https://www.amazon.in/"},
+{id:6,name:"பேக்",cat:"வீடு",icon:"🎒",price:799,old:999,store:"மாதிரி கடை B",url:"https://www.flipkart.com/"}
+];
+
+let selectedCategory="அனைத்தும்";
+
+function money(n){return "₹"+n.toLocaleString("en-IN")}
+
+function showProducts(){
+const q=document.getElementById("search").value.toLowerCase();
+const filtered=items.filter(p=>
+(selectedCategory==="அனைத்தும்"||p.cat===selectedCategory)&&
+p.name.toLowerCase().includes(q)
+);
+document.getElementById("products").innerHTML=filtered.map(p=>`
+<div class="card">
+<div class="pic">${p.icon}</div>
+<h3>${p.name}</h3>
+<div class="price">${money(p.price)}</div>
+<div class="old">${money(p.old)}</div>
+<p class="badge">${Math.round((p.old-p.price)/p.old*100)}% மாதிரி தள்ளுபடி</p>
+<button class="view" onclick="showDetails(${p.id})">விவரங்களைப் பார்க்க</button>
+</div>`).join("");
+}
+
+function category(c){
+selectedCategory=c;
+showProducts();
+}
+
+function showDetails(id){
+const p=items.find(x=>x.id===id);
+const saved=p.old-p.price;
+document.getElementById("home").style.display="none";
+const d=document.getElementById("details");
+d.style.display="block";
+d.innerHTML=`
+<button class="back" onclick="goBack()">← திரும்பச் செல்ல</button>
+<div class="pic">${p.icon}</div>
+<h2>${p.name}</h2>
+<p>தற்போதைய மாதிரி விலை: <strong>${money(p.price)}</strong></p>
+<p>முந்தைய மாதிரி விலை: <span class="old">${money(p.old)}</span></p>
+<p class="badge">விலை வித்தியாசம்: ${money(saved)}</p>
+<p>மாதிரி தள்ளுபடி: ${Math.round(saved/p.old*100)}%</p>
+<h3>🏆 விலை விவரம்</h3>
+<p>${p.store}: ${money(p.price)}</p>
+<p>குறிப்பு: இவை சோதனைக்கான மாதிரி விலைகள் மட்டுமே; நேரடி கடை விலைகள் அல்ல.</p>
+<a class="buy" href="${p.url}" target="_blank" rel="noopener">கடைக்குச் செல்லுங்கள்</a>
+`;
+window.scrollTo(0,0);
+}
+
+function goBack(){
+document.getElementById("details").style.display="none";
+document.getElementById("home").style.display="block";
+}
+
+showProducts();
+</script>
+</body>
+</html>
